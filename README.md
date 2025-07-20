@@ -17,7 +17,7 @@ Everton Gabriel
 4. Digite `P` se quiser parar.
 
 ## Como Executar
-git clone https://github.com/seu-usuario/show-do-milhao.git
+git clone https://github.com/Evert0nSantos/show-do-milhao.git
 cd show-do-milhao
 npm install
 npm start
