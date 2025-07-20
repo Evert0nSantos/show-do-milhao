@@ -1,9 +1,10 @@
 const readline = require('readline-sync');
+const fs = require('fs');
 
 const perguntas = [
   {
-    pergunta: "Em Qual Cidade acontece o Festival Mundial da Cachaça?",
-    alternativas: ["A) Belo Horizonte", "B) Brasília", "C) Salinas"],
+    pergunta: "Quem é o melhor professor do IF?",
+    alternativas: ["A) Stanley Marcos", "B) Mario Anisio", "C) Arthur Porto"],
     correta: "C"
   },
   {
@@ -13,7 +14,7 @@ const perguntas = [
   },
   {
     pergunta: "Quem é o fundador da cachaça Havana?",
-    alternativas: ["A) Antônio Rodrigues", "B) Mario Ansio", "C) Anísio Santiago "],
+    alternativas: ["A) Antônio Rodrigues", "B) Mario Anisio", "C) Anísio Santiago "],
     correta: "C"
   },
   {
@@ -27,9 +28,9 @@ const perguntas = [
     correta: "C"
   },
   {
-    pergunta: "Quem pintou a Mona Lisa?",
-    alternativas: ["A) Van Gogh", "B) Leonardo da Vinci", "C) Picasso"],
-    correta: "B"
+    pergunta: "Em Qual Cidade acontece o Festival Mundial da Cachaça?",
+    alternativas: ["A) Belo Horizonte", "B) Brasília", "C) Salinas"],
+    correta: "C"
   },
   {
     pergunta: "Qual o símbolo químico da água?",
@@ -79,14 +80,40 @@ const perguntas = [
 ];
 
 const premiacoes = [1000, 5000, 10000, 50000, 100000, 500000, 1000000];
+const arquivoRanking = 'ranking.json';
+
+function salvarRanking(nome, premio) {
+  let ranking = [];
+  if (fs.existsSync(arquivoRanking)) {
+    const dados = fs.readFileSync(arquivoRanking);
+    ranking = JSON.parse(dados);
+  }
+
+  ranking.push({ nome, premio });
+  ranking.sort((a, b) => b.premio - a.premio);
+  fs.writeFileSync(arquivoRanking, JSON.stringify(ranking, null, 2));
+}
+
+function mostrarRanking() {
+  if (fs.existsSync(arquivoRanking)) {
+    const dados = fs.readFileSync(arquivoRanking);
+    const ranking = JSON.parse(dados);
+
+    console.log("\n Ranking dos Melhores Jogadores:");
+    ranking.slice(0, 5).forEach((jogador, i) => {
+      console.log(`${i + 1}. ${jogador.nome} - R$ ${jogador.premio}`);
+    });
+  }
+}
 
 function jogar() {
   console.clear();
-  console.log("BEM-VINDO AO SHOW DO MILHÃO\n");
+  console.log(" BEM-VINDO AO SHOW DO MILHÃO \n");
 
   const nome = readline.question("Digite seu nome: ");
   let rodada = 0;
   let perguntasDisponiveis = [...perguntas];
+  let ultimaPergunta = null;
 
   while (rodada < premiacoes.length && perguntasDisponiveis.length > 0) {
     console.clear();
@@ -95,32 +122,66 @@ function jogar() {
 
     const perguntaIndex = Math.floor(Math.random() * perguntasDisponiveis.length);
     const perguntaAtual = perguntasDisponiveis[perguntaIndex];
+    ultimaPergunta = perguntaAtual;
 
     console.log(`\n${perguntaAtual.pergunta}`);
-    perguntaAtual.alternativas.forEach(alternativa => console.log(alternativa));
+    perguntaAtual.alternativas.forEach(alt => console.log(alt));
 
-    const resposta = readline.question("\nDigite sua resposta (A, B, C) ou 'P' para parar: ").toUpperCase();
+    let resposta;
+    while (true) {
+      resposta = readline.question("\nDigite sua resposta (A, B, C), 'H' para ajuda ou 'P' para parar: ").toUpperCase();
+
+      if (!["A", "B", "C", "H", "P"].includes(resposta)) {
+        console.log("Resposta inválida! Tente novamente.");
+        continue;
+      }
+
+      if (resposta === 'H') {
+        const alternativasErradas = perguntaAtual.alternativas.filter(alt => !alt.startsWith(perguntaAtual.correta));
+        const alternativaRemovida = alternativasErradas[Math.floor(Math.random() * alternativasErradas.length)];
+        console.log(`\n AJUDA: Eliminamos uma alternativa incorreta: ${alternativaRemovida}`);
+        continue;
+      }
+
+      break;
+    }
 
     if (resposta === 'P') {
       const premioParar = rodada === 0 ? 0 : premiacoes[rodada - 1];
-      console.log(`\nVocê decidiu parar. Saiu com R$ ${premioParar}`);
+      console.log(`\n Você decidiu parar.`);
+      console.log(`Rodada atual: ${rodada + 1}`);
+      console.log(`Rodadas restantes: ${premiacoes.length - rodada}`);
+      console.log(`Resposta correta da última pergunta: ${ultimaPergunta.correta}`);
+      console.log(`Você saiu com R$ ${premioParar}`);
+
+      salvarRanking(nome, premioParar);
+      mostrarRanking();
       break;
     }
 
     if (resposta === perguntaAtual.correta) {
-      console.log("\nResposta correta.");
+      console.log("\n✅ Resposta correta!");
       rodada++;
       perguntasDisponiveis.splice(perguntaIndex, 1);
 
       if (rodada === premiacoes.length) {
-        console.log(`\nParabéns, ${nome}. Você ganhou R$ ${premiacoes[rodada - 1]}.`);
-      } else {
-        readline.question("\nPressione Enter para continuar para a próxima rodada...");
+        console.log(`\n Parabéns, ${nome}! Você acertou todas as perguntas.`);
+        console.log(`Resposta correta da última pergunta: ${perguntaAtual.correta}`);
+        console.log(` Premiação final: R$ ${premiacoes[rodada - 1]}`);
+
+        salvarRanking(nome, premiacoes[rodada - 1]);
+        mostrarRanking();
+        break;
       }
+
+      readline.question("\nPressione Enter para continuar para a próxima rodada...");
     } else {
-      console.log("\nResposta incorreta.");
+      console.log("\n❌ Resposta incorreta.");
       console.log(`A resposta correta era: ${perguntaAtual.correta}`);
       console.log(`\nFim de jogo, ${nome}. Você saiu com R$ 0.`);
+
+      salvarRanking(nome, 0);
+      mostrarRanking();
       break;
     }
   }
@@ -129,7 +190,7 @@ function jogar() {
   if (jogarDeNovo === 'S') {
     jogar();
   } else {
-    console.log("\nObrigado por jogar.");
+    console.log("\n Obrigado por jogar!");
   }
 }
 
