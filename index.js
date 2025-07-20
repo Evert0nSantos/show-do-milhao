@@ -33,23 +33,23 @@ const perguntas = [
     correta: "C"
   },
   {
-    pergunta: "Qual o símbolo químico da água?",
-    alternativas: ["A) O2", "B) H2O", "C) CO2"],
+    pergunta: "Em qual parte do continente americano o Brasil está localizado?",
+    alternativas: ["A) América do Norte", "B) América do Sul", "C) América Central"],
     correta: "B"
   },
   {
-    pergunta: "Quem escreveu Dom Casmurro?",
-    alternativas: ["A) Machado de Assis", "B) José de Alencar", "C) Clarice Lispector"],
+    pergunta: "Qual é o menor planeta do Sistema Solar?",
+    alternativas: ["A) Mercúrio", "B) Plutão", "C) Terra"],
     correta: "A"
   },
   {
-    pergunta: "Qual é a fórmula da velocidade média?",
-    alternativas: ["A) d/t", "B) t/d", "C) d*t"],
+    pergunta: "Qual a capital do Brasil?",
+    alternativas: ["A) Brasilia", "B) Salvador", "C) Rio De Janeiro"],
     correta: "A"
   },
   {
-    pergunta: "Qual a moeda do Japão?",
-    alternativas: ["A) Dólar", "B) Iene", "C) Yuan"],
+    pergunta: "Quem é o maior Artilheiro da Seleção Brasileira?",
+    alternativas: ["A) Pelé", "B) Neymar Jr", "C) Ronaldo Fenômeno"],
     correta: "B"
   },
   {
@@ -73,9 +73,9 @@ const perguntas = [
     correta: "A"
   },
   {
-    pergunta: "Quem compôs 'Garota de Ipanema'?",
-    alternativas: ["A) Tom Jobim e Vinícius", "B) Roberto Carlos", "C) Caetano Veloso"],
-    correta: "A"
+    pergunta: "Quem foi o primeiro presidente do Brasil?",
+    alternativas: ["A) Getúlio Vargas", "B) Marechal Deodoro da Fonseca", "C) Juscelino Kubitschek"],
+    correta: "B"
   }
 ];
 
